@@ -1,0 +1,12 @@
+.swiper-button-prev,
+.swiper-button-next {
+ width: 22px;
+height: 22px;
+border-radius: 50%;
+transition: .3s;
+top: 50%;
+transform: translateY(-50%);
+}
+
+
+
