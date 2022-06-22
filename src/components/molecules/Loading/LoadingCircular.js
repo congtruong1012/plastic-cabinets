@@ -12,7 +12,7 @@ const IconButtonLight = styled(IconButton)(({ theme }) => ({
   },
   padding: theme.spacing(1.5),
 }));
-
+  
 function LoadingCircular(props) {
   const { isInitApp, loading = true, boxProps, buttonProps } = props;
   return (

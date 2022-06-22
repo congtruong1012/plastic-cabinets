@@ -20,7 +20,7 @@ function Link({ editor }) {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      content: '',
+      content: '',  
       link: '',
     },
     resolver: yupResolver(

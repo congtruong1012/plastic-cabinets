@@ -56,6 +56,7 @@ export default function Dialog(props) {
     content,
     textSubmit = 'Lưu',
     textCancel = 'Hủy',
+    isLoading,
     onSubmit = () => {},
     dialogProps,
     dialogTitleProps,
@@ -82,7 +83,7 @@ export default function Dialog(props) {
           <ButtonRounded variant="contained" color="inherit" onClick={onClose}>
             {textCancel}
           </ButtonRounded>
-          <ButtonRounded variant="contained" color="primary" onClick={onSubmit}>
+          <ButtonRounded variant="contained" color="primary" onClick={onSubmit} disabled={isLoading}>
             {textSubmit}
           </ButtonRounded>
         </DialogActions>
@@ -101,4 +102,5 @@ Dialog.propTypes = {
   onSubmit: PropTypes.func,
   textSubmit: PropTypes.string,
   textCancel: PropTypes.string,
+  isLoading: PropTypes.bool,
 };
