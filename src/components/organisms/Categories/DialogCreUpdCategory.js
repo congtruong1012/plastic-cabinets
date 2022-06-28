@@ -8,7 +8,7 @@ import yupCus from 'assets/js/yup';
 import { unwrapResult } from '@reduxjs/toolkit';
 
 function DialogCreUpdCategory(props) {
-  const { open, onClose, category, triggerCreUpdCategory } = props;
+  const { open, onClose, category, triggerCreUpdCategory, isLoading } = props;
 
   const {
     control,
@@ -29,7 +29,7 @@ function DialogCreUpdCategory(props) {
     try {
       const res = await triggerCreUpdCategory({ id: category?.id, ...data });
       unwrapResult(res);
-      onClose()
+      onClose();
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +50,7 @@ function DialogCreUpdCategory(props) {
         />
       }
       onSubmit={handleSubmit(onSubmit)}
+      isLoading={isLoading}
     />
   );
 }
@@ -62,6 +63,7 @@ DialogCreUpdCategory.propTypes = {
   title: PropTypes.string,
   children: PropTypes.node,
   triggerCreUpdCategory: PropTypes.func,
+  isLoading: PropTypes.bool,
 };
 
 export default DialogCreUpdCategory;

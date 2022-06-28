@@ -57,7 +57,6 @@ function Categories() {
   const triggerDeleteCategory = (query) => dispatch(fetchDeleteCategory(query));
 
   const handleLoadMore = (e, newPage) => {
-    console.log('handleLoadMore ~ newPage', newPage);
     triggerGetListCategory({ ...params, page: newPage });
   };
 

@@ -7,6 +7,11 @@ async function getListCategory(params) {
   return res;
 }
 
+async function getAllCategory() {
+  const res = axiosClient.get(url('all'));
+  return res;
+}
+
 async function getDetailCategory(id) {
   const res = axiosClient.get(url('detail'), { id });
   return res;
@@ -22,4 +27,4 @@ async function deleteCategory(id) {
   return res;
 }
 
-export { getListCategory, getDetailCategory, creUpdCategory, deleteCategory };
+export { getListCategory, getAllCategory, getDetailCategory, creUpdCategory, deleteCategory };

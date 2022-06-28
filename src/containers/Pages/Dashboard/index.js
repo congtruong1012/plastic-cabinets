@@ -1,11 +1,13 @@
-import { Grid, Stack, styled, Typography, useTheme } from '@mui/material';
+import { Grid, Skeleton, Stack, styled, Typography, useTheme } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import BECard from 'components/molecules/BECard';
 import LinkTo from 'components/molecules/LinkTo';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
-import React, { useEffect, useState } from 'react';
-import axiosClient from '../../../apis';
+import { format } from 'date-fns';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Filter from './Filter';
+import { fetchGetDashboard, fetchGetNewestOrder } from './reducer';
 
 const CardTurnover = styled('div')(({ theme, color }) => ({
   display: 'flex',
@@ -19,21 +21,25 @@ const CardTurnover = styled('div')(({ theme, color }) => ({
 }));
 
 function Dashboard() {
-  const [turnover, setTurnover] = useState(null);
   const theme = useTheme();
 
-  useEffect(() => {
-    axiosClient
-      .get('/user/list')
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-  }, []);
+  const { isLoadingDashboard, isLoadingNewestOrder, dashboard, newsestOrder } = useSelector((state) => state.dashboard);
+  console.log('Dashboard ~ dashboard', dashboard);
+
+  const dispatch = useDispatch();
+  const triggerGetDashBoard = (query) => dispatch(fetchGetDashboard(query));
+  const triggerGetNewestOrder = () => dispatch(fetchGetNewestOrder());
 
   useEffect(() => {
-    axiosClient
-      .get('/test')
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    if (!isLoadingDashboard) {
+      triggerGetDashBoard({
+        from: format(new Date(), 'yyyy-MM-dd'),
+        to: format(new Date(), 'yyyy-MM-dd'),
+      });
+    }
+    if (!isLoadingNewestOrder) {
+      triggerGetNewestOrder();
+    }
   }, []);
 
   const turnovers = [
@@ -56,19 +62,19 @@ function Dashboard() {
   const orders = [
     {
       label: 'Chờ xác nhận',
-      value: '10',
+      value: dashboard[0] || 0,
     },
     {
       label: 'Xác nhận',
-      value: '20',
+      value: dashboard[1] || 0,
     },
     {
       label: 'Đã giao',
-      value: '50',
+      value: dashboard[2] || 0,
     },
     {
       label: 'Đã hủy',
-      value: '7',
+      value: dashboard[3] || 0,
     },
   ];
 
@@ -97,14 +103,14 @@ function Dashboard() {
     },
   ];
 
-  const newestOrdersRow = [1, 2, 3].map(() => createRows('O-10121998', 'Trương Chí Công', '300.000đ'));
+  const newestOrdersRow = newsestOrder.map((item) => createRows(item?.code, item?.customerId?.name, item?.totalPrice));
 
   return (
     <Stack spacing={2}>
       <BECard title="Tổng quan" />
       <BECard
         title="Doanh thu"
-        rightAction={<Filter value={turnover} onChange={setTurnover} />}
+        rightAction={<Filter triggerAction={(value) => console.log(value)} />}
         containerProps={{ alignItems: 'flex-start' }}
         rightActionProps={{ xs: 12, sm: true }}
       >
@@ -125,7 +131,7 @@ function Dashboard() {
       </BECard>
       <BECard
         title="Đơn hàng"
-        rightAction={<Filter value={turnover} onChange={setTurnover} />}
+        rightAction={<Filter triggerAction={triggerGetDashBoard} />}
         containerProps={{ alignItems: 'flex-start' }}
         rightActionProps={{ xs: 12, sm: true }}
       >
@@ -134,10 +140,10 @@ function Dashboard() {
             <Grid item xs={12} sm={6} md={3} key={String(index)}>
               <CardTurnover>
                 <Typography gutterBottom variant="body2">
-                  {item.label}
+                  {isLoadingDashboard ? <Skeleton width={70} /> : item.label}
                 </Typography>
                 <Typography fontWeight={700} variant="h6" color={theme.palette.success.light}>
-                  {item.value}
+                  {isLoadingDashboard ? <Skeleton width={30} /> : item.value}
                 </Typography>
               </CardTurnover>
             </Grid>

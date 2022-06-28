@@ -1,5 +1,4 @@
-import { Divider, Grid, Pagination, Stack, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Divider, Grid, MenuItem, Pagination, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import Autocomplete from 'components/atoms/Autocomplete';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
@@ -9,24 +8,100 @@ import BECard from 'components/molecules/BECard';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
 import DialogCreUpdProduct from 'components/organisms/Products/DialogCreUpdProduct';
 import DialogDeleteProduct from 'components/organisms/Products/DialogDeleteProduct';
-import React, { useState } from 'react';
-import DialogViewProduct from '../../../components/organisms/Products/DialogViewProduct';
+import DialogViewProduct from 'components/organisms/Products/DialogViewProduct';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
 
 // import PropTypes from 'prop-types';
 
+const LIMIT = 8;
+
+const typesProd = ['Thường', 'Phổ biến', 'Mới nhất', 'Bán chạy'];
+
 function Products() {
+  const [id, setId] = useState();
+  const [data, setData] = useState();
+
   const [open, setOpen] = useState(false);
   const [openDel, setOpenDel] = useState(false);
   const [openView, setOpenView] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      name: '',
+      category: null,
+      typeProd: 0,
+    },
+  });
 
-  const handleOpenDel = () => setOpenDel(true);
-  const handleCloseDel = () => setOpenDel(false);
+  const {
+    isLoading,
+    isLoadingCreUpd,
+    isLoadingDelete,
+    isLoadingCategory,
+    data: products,
+    params,
+    total,
+    page,
+    categories,
+  } = useSelector((state) => state.products);
 
-  const handleOpenView = () => setOpenView(true);
-  const handleCloseView = () => setOpenView(false);
+  const dispatch = useDispatch();
+  const triggerGetListCategory = (query) => dispatch(fetchGetAllCategory(query));
+  const triggerGetListProduct = (query) => dispatch(fetchGetListProduct(query));
+  const triggerCreUpdProduct = (query) => dispatch(fetchCreUpdProduct(query));
+  const triggerDeleteProduct = (query) => dispatch(fetchDeleteProduct(query));
+
+  const handleLoadMore = (e, newPage) => {
+    triggerGetListProduct({ ...params, page: newPage });
+  };
+
+  const handleOpen = (value) => {
+    setOpen(true);
+    setData(value);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setData();
+  };
+
+  const handleOpenDel = (value) => {
+    setOpenDel(true);
+    setId(value);
+  };
+  const handleCloseDel = () => {
+    setOpenDel(false);
+    setId();
+  };
+
+  const handleOpenView = (value) => {
+    setOpenView(true);
+    setData(value);
+  };
+  const handleCloseView = () => {
+    setOpenView(false);
+    setData();
+  };
+
+  const onSubmit = (data) => {
+    triggerGetListProduct({
+      limit: LIMIT,
+      page: 1,
+      name: data?.name || undefined,
+      category: data?.category?.id || undefined,
+      typeProd: data?.typeProd || undefined,
+    });
+  };
+
+  const onReset = () => {
+    triggerGetListProduct({
+      page: 1,
+      limit: LIMIT,
+    });
+    reset();
+  };
 
   const column = [
     {
@@ -35,16 +110,16 @@ function Products() {
       format: (value) => (
         <>
           <Typography variant="body2" component="span" fontWeight={600}>
-            {value}
+            {value?.name}
           </Typography>
           <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={1}>
-            <TypoLink variant="body2" onClick={handleOpenView}>
+            <TypoLink variant="body2" onClick={() => handleOpenView(value)}>
               Xem
             </TypoLink>
-            <TypoLink color="primary" variant="body2" onClick={handleOpen}>
+            <TypoLink color="primary" variant="body2" onClick={() => handleOpen(value)}>
               Sửa
             </TypoLink>
-            <TypoLink color="error" variant="body2" onClick={handleOpenDel}>
+            <TypoLink color="error" variant="body2" onClick={() => handleOpenDel(value?.id)}>
               Xóa
             </TypoLink>
           </Stack>
@@ -53,31 +128,49 @@ function Products() {
     },
     {
       id: 'c2',
-      label: 'Giá',
+      label: 'Loại sản phẩm',
       props: {
         align: 'center',
       },
     },
     {
       id: 'c3',
-      label: 'Khuyến mãi',
+      label: 'Giá',
       props: {
         align: 'center',
       },
     },
     {
       id: 'c4',
+      label: 'Khuyến mãi',
+      props: {
+        align: 'center',
+      },
+    },
+    {
+      id: 'c5',
       label: 'Danh mục',
     },
   ];
-  const rows = [
-    ['Tủ nhựa người lớn', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-    ['Tủ nhựa trẻ em', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-    ['Tủ giày', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-    ['Giường kệ', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-    ['Bàn học, trang điểm', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-    ['Tủ bếp', '1.000.000', '0%', 'Tủ nhựa người lớn'],
-  ].map((item) => createRows(...item));
+
+  const rows = products.map((item) =>
+    createRows(item, typesProd[item?.typeProd], item?.price, item?.discount, item?.category?.name),
+  );
+
+  useEffect(() => {
+    if (!isLoading)
+      triggerGetListProduct({
+        page: 1,
+        limit: LIMIT,
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!isLoadingCategory) {
+      triggerGetListCategory();
+    }
+  }, []);
+
   return (
     <Stack spacing={2}>
       <BECard
@@ -91,24 +184,87 @@ function Products() {
       <BECard>
         <Grid container spacing={2}>
           <Grid item sm="auto" xs={12}>
-            <TextField label="Tên sản phẩm" />
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => <TextField label="Tên sản phẩm" {...field} />}
+            />
           </Grid>
           <Grid item sm={3} xs={12}>
-            <Autocomplete label="Danh mục" />
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  label="Danh mục"
+                  options={categories}
+                  autocompleteProps={{
+                    onChange: (e, data) => field.onChange(data),
+                    getOptionLabel: (option) => option?.name || '',
+                    value: field.value,
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item sm={3} xs={12}>
+            <Controller
+              name="typeProd"
+              control={control}
+              render={({ field }) => (
+                <TextField label="Loại sản phẩm" size="small" fullWidth {...field} select>
+                  <MenuItem value={0}>Tất cả</MenuItem>
+                  <MenuItem value={1}>Phổ biến</MenuItem>
+                  <MenuItem value={2}>Mới nhất</MenuItem>
+                  <MenuItem value={3}>Bán chạy</MenuItem>
+                </TextField>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Stack justifyContent="center" spacing={2} direction="row">
+              <ButtonRounded variant="contained" onClick={handleSubmit(onSubmit)}>
+                Tìm kiếm
+              </ButtonRounded>
+              <ButtonRounded variant="contained" color="inherit" onClick={onReset}>
+                Đặt lại
+              </ButtonRounded>
+            </Stack>
           </Grid>
         </Grid>
       </BECard>
       <BECard>
         <Stack spacing={2} justifyContent="center">
           <ResponsiveTable rows={rows} columns={column} />
-          <Box display="flex" justifyContent="center">
-            <Pagination variant="ountlined" count={10} />
-          </Box>
+          <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
         </Stack>
       </BECard>
-      {open && <DialogCreUpdProduct open={open} onClose={handleClose} />}
-      {openDel && <DialogDeleteProduct open={openDel} onClose={handleCloseDel} />}
-      {openView && <DialogViewProduct open={openView} onClose={handleCloseView} />}
+      {open && (
+        <DialogCreUpdProduct
+          open={open}
+          onClose={handleClose}
+          product={data}
+          categories={categories}
+          isLoadingCategory={isLoadingCategory}
+          isLoadingCreUpd={isLoadingCreUpd}
+          triggerGetListCategory={triggerGetListCategory}
+          triggerGetListProduct={triggerGetListProduct}
+          triggerCreUpdProduct={triggerCreUpdProduct}
+          limit={LIMIT}
+        />
+      )}
+      {openDel && (
+        <DialogDeleteProduct
+          open={openDel}
+          onClose={handleCloseDel}
+          id={id}
+          limit={LIMIT}
+          isLoading={isLoadingDelete}
+          triggerDeleteProduct={triggerDeleteProduct}
+          triggerGetListProduct={triggerGetListProduct}
+        />
+      )}
+      {openView && <DialogViewProduct open={openView} onClose={handleCloseView} product={data} />}
     </Stack>
   );
 }

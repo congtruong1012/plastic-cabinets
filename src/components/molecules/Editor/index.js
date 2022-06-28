@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useEditor, EditorContent, mergeAttributes } from '@tiptap/react';
@@ -7,8 +8,8 @@ import MenuBar from './MenuBar';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 
-const WrapEditorContent = styled(Box)(({ theme }) => ({
-  outline: `${theme.palette.text.disabled} 1px solid`,
+const WrapEditorContent = styled(Box)(({ theme, error }) => ({
+  outline: `${error ? theme.palette.error.main : theme.palette.text.disabled} 1px solid`,
   borderRadius: 4,
 }));
 
@@ -38,10 +39,21 @@ const StyledEditor = styled(EditorContent)(({ theme, error }) => ({
   },
 }));
 
-function Editor(props) {
-  const { label, error, helperText, required } = props;
+const Editor = React.forwardRef((props, ref) => {
+  const { label, error, helperText, required, content, onChange } = props;
+  console.log('Editor ~ content', content);
   const editor = useEditor({
-    content: '',
+    content,
+    onUpdate({ editor }) {
+      const html = editor.getHTML();
+      onChange({
+        text: editor.getText(),
+        html,
+      });
+      if (editor.getText().length === 0) {
+        editor.chain().focus().outdent().run();
+      }
+    },
     extensions: [
       StarterKit,
       Link,
@@ -53,10 +65,9 @@ function Editor(props) {
       }),
     ],
   });
-
   return (
     <>
-      <WrapEditorContent error={error}>
+      <WrapEditorContent error={error} ref={ref}>
         <Typography sx={{ px: 2, pt: 1 }}>
           {label}{' '}
           {required && (
@@ -75,9 +86,11 @@ function Editor(props) {
       )}
     </>
   );
-}
+});
 
 Editor.propTypes = {
+  content: PropTypes.any,
+  onChange: PropTypes.func,
   label: PropTypes.string,
   error: PropTypes.bool,
   helperText: PropTypes.string,
