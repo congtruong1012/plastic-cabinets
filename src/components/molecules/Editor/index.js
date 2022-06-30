@@ -41,7 +41,6 @@ const StyledEditor = styled(EditorContent)(({ theme, error }) => ({
 
 const Editor = React.forwardRef((props, ref) => {
   const { label, error, helperText, required, content, onChange } = props;
-  console.log('Editor ~ content', content);
   const editor = useEditor({
     content,
     onUpdate({ editor }) {

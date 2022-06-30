@@ -49,6 +49,7 @@ function DialogCreUpdCategory(props) {
           )}
         />
       }
+      action={false}
       onSubmit={handleSubmit(onSubmit)}
       isLoading={isLoading}
     />

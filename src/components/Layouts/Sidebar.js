@@ -3,6 +3,8 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
+import logoDark from 'assets/image/cabinet-dark.png';
+import { MainContext } from 'context/MainProvider';
 import logo from 'assets/image/cabinet.png';
 import { mainMenu } from 'assets/js/routes';
 import Menu from 'components/molecules/Menu';
@@ -11,15 +13,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
   const width = useWidth();
+  const { mode } = React.useContext(MainContext);
+
   const drawer = (
     <div>
       {['md', 'sm', 'xs'].includes(width) ? (
         <Box my={1} ml={2}>
           <Link href="/" underline="none" color="inherit">
-            <CardMedia image={logo} sx={{ height: 50, width: 100 }} />
-            {/* <Typography variant="h6" noWrap component="div" fontWeight={600}>
-                        Clipped drawer
-                    </Typography> */}
+            <CardMedia image={mode === 'light' ? logo : logoDark} sx={{ height: 50, width: 100 }} />
           </Link>
         </Box>
       ) : (

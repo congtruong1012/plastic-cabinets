@@ -170,11 +170,12 @@ function DialogCreUpdProduct(props) {
                           customInput={TextField}
                           label="Giá"
                           required
-                          {...field}
                           thousandSeparator={'.'}
                           decimalSeparator={','}
                           allowNegative={false}
+                          value={field.value}
                           onValueChange={({ value }) => {
+                            console.log('DialogCreUpdProduct ~ value', value);
                             field.onChange(value);
                           }}
                           error={!!errors?.price}
@@ -192,7 +193,7 @@ function DialogCreUpdProduct(props) {
                           customInput={TextField}
                           label="Khuyến mãi"
                           required
-                          {...field}
+                          value={field.value}
                           suffix="%"
                           allowNegative={false}
                           isAllowed={({ value }) => Number(value) <= 100}

@@ -1,7 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getDashboard, getNewestOrder } from 'apis/dashboard';
+import { getTurnover, getDashboard, getNewestOrder } from 'apis/dashboard';
 
 const namespace = 'dashboard';
+
+export const fetchGetTurnover = createAsyncThunk(`${namespace}/fetchGetTurnover`, async (params) => {
+  const res = await getTurnover(params);
+  return res;
+});
 
 export const fetchGetDashboard = createAsyncThunk(`${namespace}/fetchGetDashboard`, async (params) => {
   return await getDashboard(params);
@@ -15,14 +20,27 @@ const dashboardSlice = createSlice({
   name: namespace,
   initialState: {
     isLoadingDashboard: false,
+    isLoadingTurnover: false,
     isLoadingNewestOrder: false,
     params: {},
-    dashboard: [],
+    turnover: {},
+    dashboard: {},
     newsestOrder: [],
     error: null,
   },
   reducers: {},
   extraReducers: {
+    [fetchGetTurnover.pending]: (state) => {
+      state.isLoadingTurnover = true;
+    },
+    [fetchGetTurnover.fulfilled]: (state, action) => {
+      state.isLoadingTurnover = false;
+      state.turnover = action.payload;
+    },
+    [fetchGetTurnover.rejected]: (state, action) => {
+      state.isLoadingTurnover = false;
+      state.error = action.error;
+    },
     [fetchGetDashboard.pending]: (state, { meta: { arg } }) => {
       state.isLoadingDashboard = true;
       state.params = arg;

@@ -12,6 +12,7 @@ import DialogViewProduct from 'components/organisms/Products/DialogViewProduct';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import formatCurrency from 'assets/js/helper/formatCurrency';
 import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
 
 // import PropTypes from 'prop-types';
@@ -154,7 +155,13 @@ function Products() {
   ];
 
   const rows = products.map((item) =>
-    createRows(item, typesProd[item?.typeProd], item?.price, item?.discount, item?.category?.name),
+    createRows(
+      item,
+      typesProd[item?.typeProd],
+      formatCurrency(item?.price),
+      `${item?.discount || 0}%`,
+      item?.category?.name,
+    ),
   );
 
   useEffect(() => {

@@ -6,8 +6,9 @@ import ResponsiveTable from 'components/molecules/ResponsiveTable';
 import { format } from 'date-fns';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import formatCurrency from 'assets/js/helper/formatCurrency';
 import Filter from './Filter';
-import { fetchGetDashboard, fetchGetNewestOrder } from './reducer';
+import { fetchGetDashboard, fetchGetNewestOrder, fetchGetTurnover } from './reducer';
 
 const CardTurnover = styled('div')(({ theme, color }) => ({
   display: 'flex',
@@ -23,38 +24,43 @@ const CardTurnover = styled('div')(({ theme, color }) => ({
 function Dashboard() {
   const theme = useTheme();
 
-  const { isLoadingDashboard, isLoadingNewestOrder, dashboard, newsestOrder } = useSelector((state) => state.dashboard);
-  console.log('Dashboard ~ dashboard', dashboard);
+  const { isLoadingTurnover, isLoadingDashboard, isLoadingNewestOrder, turnover, dashboard, newsestOrder } =
+    useSelector((state) => state.dashboard);
 
   const dispatch = useDispatch();
+  const triggerGetTurnover = (query) => dispatch(fetchGetTurnover(query));
   const triggerGetDashBoard = (query) => dispatch(fetchGetDashboard(query));
   const triggerGetNewestOrder = () => dispatch(fetchGetNewestOrder());
 
   useEffect(() => {
+    const params = {
+      from: format(new Date(), 'yyyy-MM-dd'),
+      to: format(new Date(), 'yyyy-MM-dd'),
+    };
     if (!isLoadingDashboard) {
-      triggerGetDashBoard({
-        from: format(new Date(), 'yyyy-MM-dd'),
-        to: format(new Date(), 'yyyy-MM-dd'),
-      });
+      triggerGetDashBoard(params);
     }
     if (!isLoadingNewestOrder) {
       triggerGetNewestOrder();
+    }
+    if (!isLoadingTurnover) {
+      triggerGetTurnover(params);
     }
   }, []);
 
   const turnovers = [
     {
       label: 'Tổng doanh thu',
-      value: '100.000đ',
+      value: formatCurrency((turnover?.success || 0) + (turnover?.failed || 0)),
     },
     {
       label: 'Thành công',
-      value: '100.000đ',
+      value: formatCurrency(turnover?.success || 0),
       color: theme.palette.primary.light,
     },
     {
       label: 'Hủy',
-      value: '100.000đ',
+      value: formatCurrency(turnover?.failed || 0),
       color: theme.palette.error.light,
     },
   ];
@@ -62,19 +68,19 @@ function Dashboard() {
   const orders = [
     {
       label: 'Chờ xác nhận',
-      value: dashboard[0] || 0,
+      value: dashboard?.waiting || 0,
     },
     {
       label: 'Xác nhận',
-      value: dashboard[1] || 0,
+      value: dashboard?.confirmed || 0,
     },
     {
       label: 'Đã giao',
-      value: dashboard[2] || 0,
+      value: dashboard?.delivered || 0,
     },
     {
       label: 'Đã hủy',
-      value: dashboard[3] || 0,
+      value: dashboard?.canceled || 0,
     },
   ];
 
@@ -103,26 +109,28 @@ function Dashboard() {
     },
   ];
 
-  const newestOrdersRow = newsestOrder.map((item) => createRows(item?.code, item?.customerId?.name, item?.totalPrice));
+  const newestOrdersRow = newsestOrder.map((item) =>
+    createRows(item?.code, item?.customer?.fullName, formatCurrency(item?.totalPrice)),
+  );
 
   return (
     <Stack spacing={2}>
       <BECard title="Tổng quan" />
       <BECard
         title="Doanh thu"
-        rightAction={<Filter triggerAction={(value) => console.log(value)} />}
+        rightAction={<Filter triggerAction={triggerGetTurnover} />}
         containerProps={{ alignItems: 'flex-start' }}
         rightActionProps={{ xs: 12, sm: true }}
       >
         <Grid container spacing={2}>
           {turnovers.map((item, index) => (
-            <Grid item xs={12} sm={6} md={4} key={String(index)}>
+            <Grid item xs={12} md={index === 0 ? 12 : 6} lg={4} key={String(index)}>
               <CardTurnover color={item.color}>
                 <Typography gutterBottom variant="body2">
-                  {item.label}
+                  {isLoadingTurnover ? <Skeleton width={70} /> : item.label}
                 </Typography>
                 <Typography fontWeight={700} variant="h6">
-                  {item.value}
+                  {isLoadingTurnover ? <Skeleton width={30} /> : item.value}
                 </Typography>
               </CardTurnover>
             </Grid>
@@ -137,7 +145,7 @@ function Dashboard() {
       >
         <Grid container spacing={2}>
           {orders.map((item, index) => (
-            <Grid item xs={12} sm={6} md={3} key={String(index)}>
+            <Grid item xs={12} md={6} lg={3} key={String(index)}>
               <CardTurnover>
                 <Typography gutterBottom variant="body2">
                   {isLoadingDashboard ? <Skeleton width={70} /> : item.label}

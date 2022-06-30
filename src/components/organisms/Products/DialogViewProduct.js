@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Dialog from 'components/atoms/Dialog';
 import Image from 'components/atoms/Image';
 import PropTypes from 'prop-types';
+import formatCurrency from 'assets/js/helper/formatCurrency';
 import './style.css';
 import { Divider, Grid, Stack, Typography } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -71,16 +72,10 @@ function DialogViewProduct(props) {
               <div dangerouslySetInnerHTML={{ __html: product?.description }} />
               <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography fontWeight={600} sx={{ my: 2 }} component="s" fontSize="1.5rem">
-                  {(product?.price || 0).toLocaleString('vi', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })}
+                  {formatCurrency(product?.price || 0)}
                 </Typography>
                 <Typography color="error" fontWeight={700} sx={{ my: 2 }} component="span" fontSize="1.5rem">
-                  {getDiscount().toLocaleString('vi', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })}
+                  {formatCurrency(getDiscount())}
                 </Typography>
               </Stack>
               <Typography>Danh mục: {product?.category?.name}</Typography>
