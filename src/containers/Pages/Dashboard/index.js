@@ -7,8 +7,8 @@ import { format } from 'date-fns';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import formatCurrency from 'assets/js/helper/formatCurrency';
-import Filter from './Filter';
 import { fetchGetDashboard, fetchGetNewestOrder, fetchGetTurnover } from './reducer';
+import Filter from 'components/organisms/Dashboard/Filter';
 
 const CardTurnover = styled('div')(({ theme, color }) => ({
   display: 'flex',

@@ -4,6 +4,7 @@ import app from 'containers/App/reducer';
 import dashboard from 'containers/Pages/Dashboard/reducer';
 import categories from 'containers/Pages/Categories/reducer';
 import products from 'containers/Pages/Products/reducer';
+import orders from 'containers/Pages/Orders/reducer';
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     dashboard,
     categories,
     products,
+    orders,
   },
 });

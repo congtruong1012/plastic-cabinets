@@ -1,4 +1,4 @@
-import { Divider, Grid, MenuItem, Pagination, Stack, Typography } from '@mui/material';
+import { Divider, Grid, MenuItem, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import Autocomplete from 'components/atoms/Autocomplete';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
@@ -6,6 +6,7 @@ import TextField from 'components/atoms/TextField';
 import TypoLink from 'components/atoms/Typography/TypoLink';
 import BECard from 'components/molecules/BECard';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
+import Pagination from 'components/atoms/Pagination';
 import DialogCreUpdProduct from 'components/organisms/Products/DialogCreUpdProduct';
 import DialogDeleteProduct from 'components/organisms/Products/DialogDeleteProduct';
 import DialogViewProduct from 'components/organisms/Products/DialogViewProduct';
@@ -241,7 +242,7 @@ function Products() {
         </Grid>
       </BECard>
       <BECard>
-        <Stack spacing={2} justifyContent="center">
+        <Stack spacing={2}>
           <ResponsiveTable rows={rows} columns={column} />
           <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
         </Stack>

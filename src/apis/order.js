@@ -17,4 +17,9 @@ async function getNewestOrder() {
   return res;
 }
 
-export { getTurnover, getDashboard, getNewestOrder };
+async function getListOrder(params) {
+  const res = axiosClient.get(url('list'), { params });
+  return res;
+}
+
+export { getTurnover, getDashboard, getNewestOrder, getListOrder };

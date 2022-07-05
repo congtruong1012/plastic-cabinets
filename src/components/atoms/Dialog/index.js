@@ -80,16 +80,18 @@ export default function Dialog(props) {
           </BootstrapDialogTitle>
         )}
         {content && <DialogContent>{content}</DialogContent>}
-        {action && (
-          <DialogActions>
-            <ButtonRounded variant="contained" color="inherit" onClick={onClose}>
-              {textCancel}
-            </ButtonRounded>
-            <ButtonRounded variant="contained" color="primary" onClick={onSubmit} disabled={isLoading}>
-              {textSubmit}
-            </ButtonRounded>
-          </DialogActions>
-        )}
+        <DialogActions>
+          {action || (
+            <>
+              <ButtonRounded variant="contained" color="inherit" onClick={onClose}>
+                {textCancel}
+              </ButtonRounded>
+              <ButtonRounded variant="contained" color="primary" onClick={onSubmit} disabled={isLoading}>
+                {textSubmit}
+              </ButtonRounded>
+            </>
+          )}
+        </DialogActions>
       </BootstrapDialog>
     </>
   );
@@ -100,7 +102,7 @@ Dialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   title: PropTypes.node.isRequired,
   content: PropTypes.node.isRequired,
-  action: PropTypes.bool,
+  action: PropTypes.any,
   dialogProps: PropTypes.object,
   dialogTitleProps: PropTypes.object,
   onSubmit: PropTypes.func,

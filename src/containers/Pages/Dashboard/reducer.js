@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getTurnover, getDashboard, getNewestOrder } from 'apis/dashboard';
+import { getTurnover, getDashboard, getNewestOrder } from 'apis/order';
 
 const namespace = 'dashboard';
 

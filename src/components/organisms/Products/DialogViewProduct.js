@@ -83,6 +83,7 @@ function DialogViewProduct(props) {
           </Grid>
         </>
       }
+      action={<></>}
       dialogProps={{
         fullWidth: true,
         maxWidth: 'xl',
