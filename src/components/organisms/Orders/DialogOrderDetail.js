@@ -4,9 +4,10 @@ import Image from 'components/atoms/Image';
 import Dialog from 'components/atoms/Dialog';
 import ResponseiveTable from 'components/molecules/ResponsiveTable';
 import { Stack, Typography } from '@mui/material';
-import createRows from 'components/../assets/js/helper/createRows';
-import formatCurrency from 'components/../assets/js/helper/formatCurrency';
+import createRows from 'assets/js/helper/createRows';
+import formatCurrency from 'assets/js/helper/formatCurrency';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
+import getPrice from 'assets/js/helper/getPrice';
 
 function DialogOrderDetail(props) {
   const { open, onClose, order = {} } = props;
@@ -28,7 +29,12 @@ function DialogOrderDetail(props) {
   ];
 
   const rows = (order?.detail || []).map((item) =>
-    createRows(item?.product?.images[0], item?.product?.name, item?.quantity, formatCurrency(item?.product?.price)),
+    createRows(
+      item?.product?.images[0],
+      item?.product?.name,
+      item?.quantity,
+      getPrice(item?.product?.price, item?.product?.discount),
+    ),
   );
 
   return (
@@ -40,7 +46,7 @@ function DialogOrderDetail(props) {
         <Stack spacing={1}>
           <ResponseiveTable rows={rows} columns={columns} />
           <Typography align="right" color="error" fontSize="1.2rem" fontWeight={700}>
-            Tổng tiền: {formatCurrency(12000000)}
+            Tổng tiền: {formatCurrency(order?.totalPrice)}
           </Typography>
         </Stack>
       }

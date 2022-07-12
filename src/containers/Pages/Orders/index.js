@@ -1,13 +1,11 @@
-import { Grid, Stack, Typography, TextField as MuiTextField, useTheme, LinearProgress } from '@mui/material';
+import { Stack, Typography, useTheme, LinearProgress } from '@mui/material';
 import BECard from 'components/molecules/BECard';
 import React, { useEffect, useState } from 'react';
 import createRows from 'assets/js/helper/createRows';
 import LinkTo from 'components/molecules/LinkTo';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
-import { DesktopDatePicker } from '@mui/x-date-pickers';
-import TextField from 'components/atoms/TextField';
-import Autocomplete from 'components/atoms/Autocomplete';
+
 import useFlag from 'hooks/useFlag';
 import DialogOrderDetail from 'components/organisms/Orders/DialogOrderDetail';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,28 +13,10 @@ import { fetchGetListOrder } from './reducer';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import Pagination from 'components/atoms/Pagination';
 import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
+import Filter from 'components/organisms/Orders/Filter';
 // import PropTypes from 'prop-types';
 
-const status = [
-  {
-    label: 'Chờ xác nhận',
-    value: 1,
-  },
-  {
-    label: 'Xác nhận',
-    value: 2,
-  },
-  {
-    label: 'Đã giao',
-    value: 3,
-  },
-  {
-    label: 'Đã hủy',
-    value: 4,
-  },
-];
-
-const LIMIT = 10;
+const LIMIT = 1;
 
 function Orders() {
   const theme = useTheme();
@@ -51,7 +31,7 @@ function Orders() {
   const triggerGetListorder = (params) => dispatch(fetchGetListOrder(params));
 
   const handleLoadMore = (e, newPage) => {
-    triggerGetListorder({ ...params, page: newPage });
+    triggerGetListorder({ params: { ...params, page: newPage }, isFirst: false });
   };
 
   const onOpen = (data) => {
@@ -133,8 +113,11 @@ function Orders() {
   useEffect(() => {
     if (!isLoadingOrder) {
       triggerGetListorder({
-        page: 1,
-        limit: LIMIT,
+        params: {
+          page: 1,
+          limit: LIMIT,
+        },
+        isFirst: true,
       });
     }
   }, []);
@@ -143,49 +126,11 @@ function Orders() {
     <Stack spacing={2}>
       <BECard title="Danh sách đơn hàng" />
       <BECard>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={6} md={6} lg={3}>
-            <TextField label="Mã đơn hàng" />
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3}>
-            <Autocomplete label="Trạng thái" options={status} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3}>
-            <DesktopDatePicker
-              label="Từ ngày"
-              inputFormat="dd/MM/yyyy"
-              renderInput={(params) => <MuiTextField fullWidth size="small" {...params} />}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={3}>
-            <DesktopDatePicker
-              label="Đến ngày"
-              inputFormat="dd/MM/yyyy"
-              renderInput={(params) => <MuiTextField fullWidth size="small" {...params} />}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Stack justifyContent="center" spacing={2} direction="row">
-              <ButtonRounded
-                variant="contained"
-                //  onClick={handleSubmit(onSubmit)}
-              >
-                Tìm kiếm
-              </ButtonRounded>
-              <ButtonRounded
-                variant="contained"
-                color="inherit"
-                // onClick={onReset}
-              >
-                Đặt lại
-              </ButtonRounded>
-            </Stack>
-          </Grid>
-        </Grid>
+        <Filter limit={LIMIT} handleFilter={triggerGetListorder} />
       </BECard>
       <BECard>
         <Stack spacing={2}>
-          {isLoadingOrder && orders?.lenght === 0 ? (
+          {isLoadingOrder && orders?.length === 0 ? (
             <LoadingCircular />
           ) : (
             <>

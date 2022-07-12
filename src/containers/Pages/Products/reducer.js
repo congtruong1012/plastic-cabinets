@@ -3,7 +3,7 @@ import { getListProduct, getDetailProduct, creUpdProduct, deleteProduct } from '
 import { getAllCategory } from 'apis/category';
 const namespace = 'product';
 
-export const fetchGetListProduct = createAsyncThunk(`${namespace}/fetchGetListProduct`, async (params) => {
+export const fetchGetListProduct = createAsyncThunk(`${namespace}/fetchGetListProduct`, async ({ params }) => {
   return await getListProduct(params);
 });
 
@@ -52,11 +52,16 @@ const productSlice = createSlice({
     [fetchGetAllCategory.rejected]: (state, { error }) => {
       state.isLoadingCategory = false;
       state.error = error.message;
+      state.categories = [];
     },
 
     [fetchGetListProduct.pending]: (state, { meta: { arg } }) => {
+      const { params, isFirst } = arg;
       state.isLoading = true;
-      state.params = arg;
+      state.params = params;
+      if (isFirst) {
+        state.data = [];
+      }
     },
     [fetchGetListProduct.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
@@ -68,6 +73,7 @@ const productSlice = createSlice({
     [fetchGetListProduct.rejected]: (state, { error }) => {
       state.isLoading = false;
       state.error = error.message;
+      state.product = [];
     },
 
     [fetchGetDetailProduct.pending]: (state) => {

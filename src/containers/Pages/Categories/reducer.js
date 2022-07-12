@@ -3,7 +3,7 @@ import { getListCategory, creUpdCategory, deleteCategory } from 'apis/category';
 
 const namespace = 'category';
 
-export const fetchGetListCategory = createAsyncThunk(`${namespace}/fetchGetListCategory`, async (params) => {
+export const fetchGetListCategory = createAsyncThunk(`${namespace}/fetchGetListCategory`, async ({ params }) => {
   return await getListCategory(params);
 });
 
@@ -30,8 +30,12 @@ const categorySlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchGetListCategory.pending]: (state, { meta: { arg } }) => {
+      const { params, isFirst } = arg;
       state.isLoading = true;
-      state.params = arg;
+      state.params = params;
+      if (isFirst) {
+        state.data = [];
+      }
     },
     [fetchGetListCategory.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
@@ -43,6 +47,7 @@ const categorySlice = createSlice({
     [fetchGetListCategory.rejected]: (state, { error }) => {
       state.isLoading = false;
       state.error = error.message;
+      state.data = [];
     },
 
     [fetchCreUpdCategory.pending]: (state) => {

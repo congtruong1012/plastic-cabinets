@@ -3,7 +3,7 @@ import { getListOrder } from 'apis/order';
 
 const namespace = 'order';
 
-export const fetchGetListOrder = createAsyncThunk(`${namespace}/fetchGetListOrder`, async (params) => {
+export const fetchGetListOrder = createAsyncThunk(`${namespace}/fetchGetListOrder`, async ({ params }) => {
   const res = await getListOrder(params);
   return res;
 });
@@ -21,8 +21,12 @@ const orderSlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchGetListOrder.pending]: (state, { meta: { arg } }) => {
+      const { params, isFirst } = arg;
       state.isLoadingOrder = true;
-      state.params = arg;
+      state.params = params;
+      if (isFirst) {
+        state.orders = [];
+      }
     },
     [fetchGetListOrder.fulfilled]: (state, action) => {
       state.isLoadingOrder = false;
@@ -33,6 +37,7 @@ const orderSlice = createSlice({
     [fetchGetListOrder.rejected]: (state, action) => {
       state.isLoadingOrder = false;
       state.error = action.error;
+      state.orders = [];
     },
   },
 });

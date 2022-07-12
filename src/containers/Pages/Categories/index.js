@@ -16,7 +16,7 @@ import { useState } from 'react';
 import useDebounce from 'hooks/useDebounce';
 // import PropTypes from 'prop-types';
 
-const LIMIT = 5;
+const LIMIT = 2;
 
 function Categories() {
   const [id, setId] = useState();
@@ -30,7 +30,7 @@ function Categories() {
   const handleClose = () => {
     setCategory();
     setOpen(false);
-    triggerGetListCategory({ limit: LIMIT, page: 1, name });
+    triggerGetListCategory({ params: { limit: LIMIT, page: 1, name }, isFirst: true });
   };
 
   const [openDel, setOpenDel] = React.useState(false);
@@ -57,7 +57,7 @@ function Categories() {
   const triggerDeleteCategory = (query) => dispatch(fetchDeleteCategory(query));
 
   const handleLoadMore = (e, newPage) => {
-    triggerGetListCategory({ ...params, page: newPage });
+    triggerGetListCategory({ params: { ...params, page: newPage } });
   };
 
   const rows = data.map((item) => createRows(item));
@@ -84,7 +84,7 @@ function Categories() {
   ];
 
   useEffect(() => {
-    triggerGetListCategory({ limit: LIMIT, page: 1, name });
+    triggerGetListCategory({ params: { limit: LIMIT, page: 1, name }, isFirst: true });
   }, [name]);
 
   return (

@@ -1,4 +1,4 @@
-import { Divider, Grid, MenuItem, Stack, Typography } from '@mui/material';
+import { Divider, Grid, LinearProgress, MenuItem, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import Autocomplete from 'components/atoms/Autocomplete';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
@@ -15,6 +15,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
+import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
 
 // import PropTypes from 'prop-types';
 
@@ -57,7 +58,7 @@ function Products() {
   const triggerDeleteProduct = (query) => dispatch(fetchDeleteProduct(query));
 
   const handleLoadMore = (e, newPage) => {
-    triggerGetListProduct({ ...params, page: newPage });
+    triggerGetListProduct({ params: { ...params, page: newPage } });
   };
 
   const handleOpen = (value) => {
@@ -89,18 +90,24 @@ function Products() {
 
   const onSubmit = (data) => {
     triggerGetListProduct({
-      limit: LIMIT,
-      page: 1,
-      name: data?.name || undefined,
-      category: data?.category?.id || undefined,
-      typeProd: data?.typeProd || undefined,
+      params: {
+        limit: LIMIT,
+        page: 1,
+        name: data?.name || undefined,
+        category: data?.category?.id || undefined,
+        typeProd: data?.typeProd || undefined,
+      },
+      isFirst: true,
     });
   };
 
   const onReset = () => {
     triggerGetListProduct({
-      page: 1,
-      limit: LIMIT,
+      params: {
+        page: 1,
+        limit: LIMIT,
+      },
+      isFirst: true,
     });
     reset();
   };
@@ -168,8 +175,11 @@ function Products() {
   useEffect(() => {
     if (!isLoading)
       triggerGetListProduct({
-        page: 1,
-        limit: LIMIT,
+        params: {
+          page: 1,
+          limit: LIMIT,
+        },
+        isFirst: true,
       });
   }, []);
 
@@ -243,8 +253,15 @@ function Products() {
       </BECard>
       <BECard>
         <Stack spacing={2}>
-          <ResponsiveTable rows={rows} columns={column} />
-          <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
+          {isLoading && products?.length === 0 ? (
+            <LoadingCircular loading />
+          ) : (
+            <>
+              <ResponsiveTable rows={rows} columns={column} />
+              {isLoading && <LinearProgress />}
+              <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
+            </>
+          )}
         </Stack>
       </BECard>
       {open && (

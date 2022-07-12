@@ -11,11 +11,21 @@ import Menu from 'components/molecules/Menu';
 import useWidth from 'hooks/useWidth';
 import PropTypes from 'prop-types';
 import React from 'react';
-function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
+
+function DrawerContent({ onClose }) {
   const width = useWidth();
   const { mode } = React.useContext(MainContext);
 
-  const drawer = (
+  const getRoutes = (routes) =>
+    routes.map((item) => ({
+      ...item,
+      ...(!item.routes ? { onClick: onClose } : {}),
+      ...(Array.isArray(item.routes) ? { routes: getRoutes(item.routes) } : {}),
+    }));
+
+  const routes = getRoutes(mainMenu);
+
+  return (
     <div>
       {['md', 'sm', 'xs'].includes(width) ? (
         <Box my={1} ml={2}>
@@ -28,9 +38,16 @@ function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
       )}
       <Divider />
       <Box my={3} />
-      <Menu routes={mainMenu} />
+      <Menu routes={routes} />
     </div>
   );
+}
+
+DrawerContent.propTypes = {
+  onClose: PropTypes.func,
+};
+
+function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
   const container = window !== undefined ? () => window().document.body : undefined;
   return (
     <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }} aria-label="mailbox folders">
@@ -48,7 +65,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
         }}
       >
-        {drawer}
+        <DrawerContent onClose={handleDrawerToggle} />
       </Drawer>
       <Drawer
         variant="permanent"
@@ -58,7 +75,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle, drawerWidth, window }) {
         }}
         open
       >
-        {drawer}
+        <DrawerContent />
       </Drawer>
     </Box>
   );

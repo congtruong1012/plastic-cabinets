@@ -67,7 +67,6 @@ axiosClient.interceptors.response.use(
           isRefreshing = true;
 
           return new Promise(function (resolve, reject) {
-            console.log('refresh token');
             refreshToken()
               .then(() => {
                 processQueue(null);

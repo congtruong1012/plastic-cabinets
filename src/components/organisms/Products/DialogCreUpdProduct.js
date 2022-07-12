@@ -71,7 +71,6 @@ function DialogCreUpdProduct(props) {
       options: { multiple: true },
       onProgress: (percent) => setProgress(percent),
       onSuccess: (res) => {
-        console.log('handleUpload ~ res', res);
         setValue('images', [...images, ...(res?.map((item) => item?.url) || [])], { shouldValidate: isSubmitted });
         setProgress(0);
       },
@@ -175,7 +174,6 @@ function DialogCreUpdProduct(props) {
                           allowNegative={false}
                           value={field.value}
                           onValueChange={({ value }) => {
-                            console.log('DialogCreUpdProduct ~ value', value);
                             field.onChange(value);
                           }}
                           error={!!errors?.price}

@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 function MenuItem(props) {
   const { route, dense } = props;
+
   const [open, setOpen] = useState(false);
 
   const handleClick = (onClick) => {
@@ -20,7 +21,7 @@ function MenuItem(props) {
         dense={!!dense}
         component={route?.path ? Link : undefined}
         to={route?.path}
-        onClick={() => !route?.path && handleClick(route.onClick)}
+        onClick={() => handleClick(route.onClick)}
       >
         {route.icon && <ListItemIcon>{<route.icon />}</ListItemIcon>}
         <ListItemText primary={route?.label} />

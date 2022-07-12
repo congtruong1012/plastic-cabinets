@@ -135,7 +135,6 @@ function Filter(props) {
               autocompleteProps={{
                 value: field.value,
                 onChange: (e, data) => {
-                  console.log('Filter ~ data?.value', data?.value);
                   if (data?.value !== 6) handleFilter(data.value);
                   field.onChange(data);
                 },
@@ -144,7 +143,6 @@ function Filter(props) {
           )}
         />
       </Grid>
-      {console.log('Filter ~ filter', filter)}
       {filter?.value === 6 && (
         <Grid item xs={12}>
           <Grid container spacing={2}>

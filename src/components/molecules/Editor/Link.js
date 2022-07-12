@@ -31,7 +31,6 @@ function Link({ editor }) {
     ),
   });
   const handleSetLink = (data) => {
-    console.log('handleSetLink ~ data', data);
     let anchors;
     editor
       .chain()
