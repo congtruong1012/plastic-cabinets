@@ -22,4 +22,19 @@ async function getListOrder(params) {
   return res;
 }
 
-export { getTurnover, getDashboard, getNewestOrder, getListOrder };
+async function confirmOrder(params) {
+  const res = axiosClient.post(url('confirm'), params);
+  return res;
+}
+
+async function cancelOrder(params) {
+  const res = axiosClient.post(url('cancel'), params);
+  return res;
+}
+
+async function deliverOrder(params) {
+  const res = axiosClient.post(url('deliver'), params);
+  return res;
+}
+
+export { getTurnover, getDashboard, getNewestOrder, getListOrder, confirmOrder, cancelOrder, deliverOrder };

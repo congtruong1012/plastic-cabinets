@@ -16,10 +16,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
 import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
+import HelmetHOC from '../../HOCs/HelmetHOC';
 
 // import PropTypes from 'prop-types';
 
-const LIMIT = 8;
+const LIMIT = 10;
 
 const typesProd = ['Thường', 'Phổ biến', 'Mới nhất', 'Bán chạy'];
 
@@ -190,107 +191,110 @@ function Products() {
   }, []);
 
   return (
-    <Stack spacing={2}>
-      <BECard
-        title="Danh sách sản phẩm"
-        rightAction={
-          <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
-            Thêm sản phẩm
-          </ButtonRounded>
-        }
-      />
-      <BECard>
-        <Grid container spacing={2}>
-          <Grid item sm="auto" xs={12}>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => <TextField label="Tên sản phẩm" {...field} />}
-            />
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <Controller
-              name="category"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  label="Danh mục"
-                  options={categories}
-                  autocompleteProps={{
-                    onChange: (e, data) => field.onChange(data),
-                    getOptionLabel: (option) => option?.name || '',
-                    value: field.value,
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <Controller
-              name="typeProd"
-              control={control}
-              render={({ field }) => (
-                <TextField label="Loại sản phẩm" size="small" fullWidth {...field} select>
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  <MenuItem value={1}>Phổ biến</MenuItem>
-                  <MenuItem value={2}>Mới nhất</MenuItem>
-                  <MenuItem value={3}>Bán chạy</MenuItem>
-                </TextField>
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Stack justifyContent="center" spacing={2} direction="row">
-              <ButtonRounded variant="contained" onClick={handleSubmit(onSubmit)}>
-                Tìm kiếm
-              </ButtonRounded>
-              <ButtonRounded variant="contained" color="inherit" onClick={onReset}>
-                Đặt lại
-              </ButtonRounded>
-            </Stack>
-          </Grid>
-        </Grid>
-      </BECard>
-      <BECard>
-        <Stack spacing={2}>
-          {isLoading && products?.length === 0 ? (
-            <LoadingCircular loading />
-          ) : (
-            <>
-              <ResponsiveTable rows={rows} columns={column} />
-              {isLoading && <LinearProgress />}
-              <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
-            </>
-          )}
-        </Stack>
-      </BECard>
-      {open && (
-        <DialogCreUpdProduct
-          open={open}
-          onClose={handleClose}
-          product={data}
-          categories={categories}
-          isLoadingCategory={isLoadingCategory}
-          isLoadingCreUpd={isLoadingCreUpd}
-          triggerGetListCategory={triggerGetListCategory}
-          triggerGetListProduct={triggerGetListProduct}
-          triggerCreUpdProduct={triggerCreUpdProduct}
-          limit={LIMIT}
+    <>
+      <HelmetHOC title="Products" />
+      <Stack spacing={2}>
+        <BECard
+          title="Danh sách sản phẩm"
+          rightAction={
+            <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+              Thêm sản phẩm
+            </ButtonRounded>
+          }
         />
-      )}
-      {openDel && (
-        <DialogDeleteProduct
-          open={openDel}
-          onClose={handleCloseDel}
-          id={id}
-          limit={LIMIT}
-          isLoading={isLoadingDelete}
-          triggerDeleteProduct={triggerDeleteProduct}
-          triggerGetListProduct={triggerGetListProduct}
-        />
-      )}
-      {openView && <DialogViewProduct open={openView} onClose={handleCloseView} product={data} />}
-    </Stack>
+        <BECard>
+          <Grid container spacing={2}>
+            <Grid item sm="auto" xs={12}>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => <TextField label="Tên sản phẩm" {...field} />}
+              />
+            </Grid>
+            <Grid item sm={3} xs={12}>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    label="Danh mục"
+                    options={categories}
+                    autocompleteProps={{
+                      onChange: (e, data) => field.onChange(data),
+                      getOptionLabel: (option) => option?.name || '',
+                      value: field.value,
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item sm={3} xs={12}>
+              <Controller
+                name="typeProd"
+                control={control}
+                render={({ field }) => (
+                  <TextField label="Loại sản phẩm" size="small" fullWidth {...field} select>
+                    <MenuItem value={0}>Tất cả</MenuItem>
+                    <MenuItem value={1}>Phổ biến</MenuItem>
+                    <MenuItem value={2}>Mới nhất</MenuItem>
+                    <MenuItem value={3}>Bán chạy</MenuItem>
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Stack justifyContent="center" spacing={2} direction="row">
+                <ButtonRounded variant="contained" onClick={handleSubmit(onSubmit)}>
+                  Tìm kiếm
+                </ButtonRounded>
+                <ButtonRounded variant="contained" color="inherit" onClick={onReset}>
+                  Đặt lại
+                </ButtonRounded>
+              </Stack>
+            </Grid>
+          </Grid>
+        </BECard>
+        <BECard>
+          <Stack spacing={2}>
+            {isLoading && products?.length === 0 ? (
+              <LoadingCircular loading />
+            ) : (
+              <>
+                <ResponsiveTable rows={rows} columns={column} />
+                {isLoading && <LinearProgress />}
+                <Pagination total={total} rows={LIMIT} page={+page} onChange={handleLoadMore} />
+              </>
+            )}
+          </Stack>
+        </BECard>
+        {open && (
+          <DialogCreUpdProduct
+            open={open}
+            onClose={handleClose}
+            product={data}
+            categories={categories}
+            isLoadingCategory={isLoadingCategory}
+            isLoadingCreUpd={isLoadingCreUpd}
+            triggerGetListCategory={triggerGetListCategory}
+            triggerGetListProduct={triggerGetListProduct}
+            triggerCreUpdProduct={triggerCreUpdProduct}
+            limit={LIMIT}
+          />
+        )}
+        {openDel && (
+          <DialogDeleteProduct
+            open={openDel}
+            onClose={handleCloseDel}
+            id={id}
+            limit={LIMIT}
+            isLoading={isLoadingDelete}
+            triggerDeleteProduct={triggerDeleteProduct}
+            triggerGetListProduct={triggerGetListProduct}
+          />
+        )}
+        {openView && <DialogViewProduct open={openView} onClose={handleCloseView} product={data} />}
+      </Stack>
+    </>
   );
 }
 

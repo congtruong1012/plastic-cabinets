@@ -86,6 +86,9 @@ function Filter(props) {
               autocompleteProps={{
                 value: field.value,
                 onChange: (event, data) => field.onChange(data),
+                isOptionEqualToValue: (option, value) => {
+                  return option?.value === value?.value;
+                },
               }}
             />
           )}

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { CardMedia, Link } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -17,10 +18,10 @@ function DrawerContent({ onClose }) {
   const { mode } = React.useContext(MainContext);
 
   const getRoutes = (routes) =>
-    routes.map((item) => ({
-      ...item,
-      ...(!item.routes ? { onClick: onClose } : {}),
-      ...(Array.isArray(item.routes) ? { routes: getRoutes(item.routes) } : {}),
+    routes.map(({ element, ...other }) => ({
+      ...other,
+      ...(!other.routes ? { onClick: onClose } : {}),
+      ...(Array.isArray(other.routes) ? { routes: getRoutes(other.routes) } : {}),
     }));
 
   const routes = getRoutes(mainMenu);

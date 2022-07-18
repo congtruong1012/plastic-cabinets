@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import { fetchGetDashboard, fetchGetNewestOrder, fetchGetTurnover } from './reducer';
 import Filter from 'components/organisms/Dashboard/Filter';
+import HelmetHOC from '../../HOCs/HelmetHOC';
 
 const CardTurnover = styled('div')(({ theme, color }) => ({
   display: 'flex',
@@ -114,55 +115,58 @@ function Dashboard() {
   );
 
   return (
-    <Stack spacing={2}>
-      <BECard title="Tổng quan" />
-      <BECard
-        title="Doanh thu"
-        rightAction={<Filter triggerAction={triggerGetTurnover} />}
-        containerProps={{ alignItems: 'flex-start' }}
-        rightActionProps={{ xs: 12, sm: true }}
-      >
-        <Grid container spacing={2}>
-          {turnovers.map((item, index) => (
-            <Grid item xs={12} md={index === 0 ? 12 : 6} lg={4} key={String(index)}>
-              <CardTurnover color={item.color}>
-                <Typography gutterBottom variant="body2">
-                  {isLoadingTurnover ? <Skeleton width={70} /> : item.label}
-                </Typography>
-                <Typography fontWeight={700} variant="h6">
-                  {isLoadingTurnover ? <Skeleton width={30} /> : item.value}
-                </Typography>
-              </CardTurnover>
-            </Grid>
-          ))}
-        </Grid>
-      </BECard>
-      <BECard
-        title="Đơn hàng"
-        rightAction={<Filter triggerAction={triggerGetDashBoard} />}
-        containerProps={{ alignItems: 'flex-start' }}
-        rightActionProps={{ xs: 12, sm: true }}
-      >
-        <Grid container spacing={2}>
-          {orders.map((item, index) => (
-            <Grid item xs={12} md={6} lg={3} key={String(index)}>
-              <CardTurnover>
-                <Typography gutterBottom variant="body2">
-                  {isLoadingDashboard ? <Skeleton width={70} /> : item.label}
-                </Typography>
-                <Typography fontWeight={700} variant="h6" color={theme.palette.success.light}>
-                  {isLoadingDashboard ? <Skeleton width={30} /> : item.value}
-                </Typography>
-              </CardTurnover>
-            </Grid>
-          ))}
-        </Grid>
-      </BECard>
+    <>
+      <HelmetHOC title="Dashboard" />
+      <Stack spacing={2}>
+        <BECard title="Tổng quan" />
+        <BECard
+          title="Doanh thu"
+          rightAction={<Filter triggerAction={triggerGetTurnover} />}
+          containerProps={{ alignItems: 'flex-start' }}
+          rightActionProps={{ xs: 12, sm: true }}
+        >
+          <Grid container spacing={2}>
+            {turnovers.map((item, index) => (
+              <Grid item xs={12} md={index === 0 ? 12 : 6} lg={4} key={String(index)}>
+                <CardTurnover color={item.color}>
+                  <Typography gutterBottom variant="body2">
+                    {isLoadingTurnover ? <Skeleton width={70} /> : item.label}
+                  </Typography>
+                  <Typography fontWeight={700} variant="h6">
+                    {isLoadingTurnover ? <Skeleton width={30} /> : item.value}
+                  </Typography>
+                </CardTurnover>
+              </Grid>
+            ))}
+          </Grid>
+        </BECard>
+        <BECard
+          title="Đơn hàng"
+          rightAction={<Filter triggerAction={triggerGetDashBoard} />}
+          containerProps={{ alignItems: 'flex-start' }}
+          rightActionProps={{ xs: 12, sm: true }}
+        >
+          <Grid container spacing={2}>
+            {orders.map((item, index) => (
+              <Grid item xs={12} md={6} lg={3} key={String(index)}>
+                <CardTurnover>
+                  <Typography gutterBottom variant="body2">
+                    {isLoadingDashboard ? <Skeleton width={70} /> : item.label}
+                  </Typography>
+                  <Typography fontWeight={700} variant="h6" color={theme.palette.success.light}>
+                    {isLoadingDashboard ? <Skeleton width={30} /> : item.value}
+                  </Typography>
+                </CardTurnover>
+              </Grid>
+            ))}
+          </Grid>
+        </BECard>
 
-      <BECard title="Top 10 đơn hàng gần nhất">
-        <ResponsiveTable rows={newestOrdersRow} columns={newestOrdersCol} />
-      </BECard>
-    </Stack>
+        <BECard title="Top 10 đơn hàng gần nhất">
+          <ResponsiveTable rows={newestOrdersRow} columns={newestOrdersCol} />
+        </BECard>
+      </Stack>
+    </>
   );
 }
 

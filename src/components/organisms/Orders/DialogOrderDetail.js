@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import Image from 'components/atoms/Image';
 import Dialog from 'components/atoms/Dialog';
 import ResponseiveTable from 'components/molecules/ResponsiveTable';
-import { Stack, Typography } from '@mui/material';
+import { CircularProgress, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
 import getPrice from 'assets/js/helper/getPrice';
 
 function DialogOrderDetail(props) {
-  const { open, onClose, order = {} } = props;
+  const { open, onClose, order = {}, flagsAction = {}, handleActionOrder } = props;
   const { status = 3 } = order;
+  console.log('DialogOrderDetail ~ order', order);
+  const { isLoadingConfirm, isLoadingCancel, isLoadingDeliver } = flagsAction;
 
   const columns = [
     { id: 'c1', label: 'Hình ảnh', format: (value) => <Image image={value} ratio="169" /> },
@@ -54,14 +56,33 @@ function DialogOrderDetail(props) {
         <>
           {status === 1 && (
             <>
-              <ButtonRounded variant="contained">Xác nhận</ButtonRounded>
-              <ButtonRounded variant="contained" color="error">
+              <ButtonRounded
+                disabled={isLoadingConfirm}
+                startIcon={isLoadingConfirm && <CircularProgress size={20} />}
+                onClick={() => handleActionOrder(order?.code, 2)}
+                variant="contained"
+              >
+                Xác nhận
+              </ButtonRounded>
+              <ButtonRounded
+                disabled={isLoadingCancel}
+                startIcon={isLoadingCancel && <CircularProgress size={20} />}
+                onClick={() => handleActionOrder(order?.code, 4)}
+                variant="contained"
+                color="error"
+              >
                 Hủy đơn
               </ButtonRounded>
             </>
           )}
           {status === 2 && (
-            <ButtonRounded variant="contained" color="warning">
+            <ButtonRounded
+              disabled={isLoadingDeliver}
+              startIcon={isLoadingDeliver && <CircularProgress size={20} />}
+              onClick={() => handleActionOrder(order?.code, 3)}
+              variant="contained"
+              color="warning"
+            >
               Giao hàng
             </ButtonRounded>
           )}
@@ -79,6 +100,8 @@ DialogOrderDetail.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   order: PropTypes.object,
+  handleActionOrder: PropTypes.func,
+  flagsAction: PropTypes.object,
 };
 
 export default DialogOrderDetail;

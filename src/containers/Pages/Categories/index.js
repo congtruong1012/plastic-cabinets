@@ -14,9 +14,10 @@ import { fetchGetListCategory, fetchCreUpdCategory, fetchDeleteCategory } from '
 import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
 import { useState } from 'react';
 import useDebounce from 'hooks/useDebounce';
+import HelmetHOC from '../../HOCs/HelmetHOC';
 // import PropTypes from 'prop-types';
 
-const LIMIT = 2;
+const LIMIT = 10;
 
 function Categories() {
   const [id, setId] = useState();
@@ -88,50 +89,58 @@ function Categories() {
   }, [name]);
 
   return (
-    <Stack spacing={2}>
-      <BECard
-        title="Danh sách danh mục"
-        rightAction={
-          <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
-            Thêm danh mục
-          </ButtonRounded>
-        }
-      />
-      <BECard>
-        <TextField label="Tên danh mục" fullWidth={false} value={search} onChange={(e) => setSearch(e.target.value)} />
-      </BECard>
-      <BECard>
-        <Stack spacing={2}>
-          {isLoading && data?.length === 0 ? (
-            <LoadingCircular />
-          ) : (
-            <>
-              <ResponsiveTable rows={rows} columns={columns} showNumberOrder />
-              {isLoading && <LinearProgress />}
-              <Pagination total={total} rows={LIMIT} page={page} onChange={handleLoadMore} />
-            </>
-          )}
-        </Stack>
-      </BECard>
-      {open && (
-        <DialogCreUpdCategory
-          open={open}
-          onClose={handleClose}
-          category={category}
-          triggerCreUpdCategory={triggerCreUpdCategory}
-          isLoading={isLoadingCreUpd}
+    <>
+      <HelmetHOC title="Categories" />
+      <Stack spacing={2}>
+        <BECard
+          title="Danh sách danh mục"
+          rightAction={
+            <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+              Thêm danh mục
+            </ButtonRounded>
+          }
         />
-      )}
-      {openDel && (
-        <DialogDeleteCategory
-          open={openDel}
-          onClose={handleCloseDel}
-          id={id}
-          triggerDeleteCategory={triggerDeleteCategory}
-          isLoading={isLoadingDelete}
-        />
-      )}
-    </Stack>
+        <BECard>
+          <TextField
+            label="Tên danh mục"
+            fullWidth={false}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </BECard>
+        <BECard>
+          <Stack spacing={2}>
+            {isLoading && data?.length === 0 ? (
+              <LoadingCircular />
+            ) : (
+              <>
+                <ResponsiveTable rows={rows} columns={columns} showNumberOrder />
+                {isLoading && <LinearProgress />}
+                <Pagination total={total} rows={LIMIT} page={page} onChange={handleLoadMore} />
+              </>
+            )}
+          </Stack>
+        </BECard>
+        {open && (
+          <DialogCreUpdCategory
+            open={open}
+            onClose={handleClose}
+            category={category}
+            triggerCreUpdCategory={triggerCreUpdCategory}
+            isLoading={isLoadingCreUpd}
+          />
+        )}
+        {openDel && (
+          <DialogDeleteCategory
+            open={openDel}
+            onClose={handleCloseDel}
+            id={id}
+            triggerDeleteCategory={triggerDeleteCategory}
+            isLoading={isLoadingDelete}
+          />
+        )}
+      </Stack>
+    </>
   );
 }
 

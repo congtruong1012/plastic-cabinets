@@ -149,6 +149,7 @@ function DialogCreUpdProduct(props) {
                         ...field,
                         onChange: (e, data) => field.onChange(data),
                         getOptionLabel: (option) => option?.name || '',
+                        isOptionEqualToValue: (option, value) => option?.id === value?.id,
                       }}
                       textfieldProps={{
                         error: !!errors?.category,

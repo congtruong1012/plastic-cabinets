@@ -138,6 +138,9 @@ function Filter(props) {
                   if (data?.value !== 6) handleFilter(data.value);
                   field.onChange(data);
                 },
+                isOptionEqualToValue: (option, value) => {
+                  return option?.value === value?.value;
+                },
               }}
             />
           )}
