@@ -4,12 +4,14 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FeedIcon from '@mui/icons-material/Feed';
 import KitchenIcon from '@mui/icons-material/Kitchen';
+import PersonIcon from '@mui/icons-material/Person';
 import PageConstant from 'constants/PageConstant';
 import Blogs from 'containers/Pages/Blogs';
 import Categories from 'containers/Pages/Categories';
 import Dashboard from 'containers/Pages/Dashboard';
 import Orders from 'containers/Pages/Orders';
 import Products from 'containers/Pages/Products';
+import Users from 'containers/Pages/Users';
 
 const productMenu = [
   {
@@ -51,6 +53,12 @@ export const mainMenu = [
     label: 'Blogs',
     icon: FeedIcon,
     element: Blogs,
+  },
+  {
+    path: PageConstant.PAGE_USERS,
+    label: 'Users',
+    icon: PersonIcon,
+    element: Users,
   },
 ];
 

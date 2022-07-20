@@ -5,6 +5,7 @@ import dashboard from 'containers/Pages/Dashboard/reducer';
 import categories from 'containers/Pages/Categories/reducer';
 import products from 'containers/Pages/Products/reducer';
 import orders from 'containers/Pages/Orders/reducer';
+import users from 'containers/Pages/Users/reducer';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     categories,
     products,
     orders,
+    users,
   },
 });

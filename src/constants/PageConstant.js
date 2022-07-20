@@ -5,4 +5,5 @@ export default {
     PAGE_PRODUCTS: '/products',
     PAGE_ORDERS: '/orders',
     PAGE_BLOGS: '/blogs',
+    PAGE_USERS: '/users',
 };
