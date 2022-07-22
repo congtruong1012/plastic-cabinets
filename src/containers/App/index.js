@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCheckLogged } from './reducer';
 import { unwrapResult } from '@reduxjs/toolkit';
 import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
+import PageForbidden from '../Response/PageForbidden';
 
 const pageNotLogin = ['/login'];
 
@@ -16,7 +17,7 @@ function App() {
   const navigator = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoading, isLogin } = useSelector((state) => state.app);
+  const { isLoading, isLogin, user } = useSelector((state) => state.app);
 
   useEffect(() => {
     if (!pageNotLogin.includes(pathname)) {
@@ -40,17 +41,26 @@ function App() {
           ) : (
             <>
               {isLogin && (
-                <MainLayout>
-                  <Routes>
-                    {routes.map((item, index) => {
-                      const Component = item?.element;
-                      if (Component) {
-                        return <Route key={String(index)} path={item.path} element={<Component />} />;
-                      }
-                    })}
-                    <Route path="*" element={<Response />} />
-                  </Routes>
-                </MainLayout>
+                <>
+                  {[0, 1].includes(user?.role) ? (
+                    <MainLayout>
+                      <Routes>
+                        {routes.map((item, index) => {
+                          const Component = item?.element;
+                          if (Component) {
+                            return (
+                              <Route key={String(index)} path={item.path} element={<Component role={user?.role} />} />
+                            );
+                          }
+                          return <Route key={String(index)} path={item.path} element={<Response code={403} />} />;
+                        })}
+                        <Route path="*" element={<Response />} />
+                      </Routes>
+                    </MainLayout>
+                  ) : (
+                    <PageForbidden />
+                  )}
+                </>
               )}
             </>
           )}

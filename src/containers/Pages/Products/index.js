@@ -1,30 +1,32 @@
 import { Divider, Grid, LinearProgress, MenuItem, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
+import formatCurrency from 'assets/js/helper/formatCurrency';
 import Autocomplete from 'components/atoms/Autocomplete';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
+import Pagination from 'components/atoms/Pagination';
 import TextField from 'components/atoms/TextField';
 import TypoLink from 'components/atoms/Typography/TypoLink';
 import BECard from 'components/molecules/BECard';
+import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
-import Pagination from 'components/atoms/Pagination';
 import DialogCreUpdProduct from 'components/organisms/Products/DialogCreUpdProduct';
 import DialogDeleteProduct from 'components/organisms/Products/DialogDeleteProduct';
 import DialogViewProduct from 'components/organisms/Products/DialogViewProduct';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import formatCurrency from 'assets/js/helper/formatCurrency';
-import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
-import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
 import HelmetHOC from '../../HOCs/HelmetHOC';
+import { fetchCreUpdProduct, fetchDeleteProduct, fetchGetAllCategory, fetchGetListProduct } from './reducer';
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 const LIMIT = 10;
 
 const typesProd = ['Thường', 'Phổ biến', 'Mới nhất', 'Bán chạy'];
 
-function Products() {
+function Products(props) {
+  const { role } = props;
+
   const [id, setId] = useState();
   const [data, setData] = useState();
 
@@ -122,17 +124,19 @@ function Products() {
           <Typography variant="body2" component="span" fontWeight={600}>
             {value?.name}
           </Typography>
-          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={1}>
-            <TypoLink variant="body2" onClick={() => handleOpenView(value)}>
-              Xem
-            </TypoLink>
-            <TypoLink color="primary" variant="body2" onClick={() => handleOpen(value)}>
-              Sửa
-            </TypoLink>
-            <TypoLink color="error" variant="body2" onClick={() => handleOpenDel(value?.id)}>
-              Xóa
-            </TypoLink>
-          </Stack>
+          {role === 1 && (
+            <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={1}>
+              <TypoLink variant="body2" onClick={() => handleOpenView(value)}>
+                Xem
+              </TypoLink>
+              <TypoLink color="primary" variant="body2" onClick={() => handleOpen(value)}>
+                Sửa
+              </TypoLink>
+              <TypoLink color="error" variant="body2" onClick={() => handleOpenDel(value?.id)}>
+                Xóa
+              </TypoLink>
+            </Stack>
+          )}
         </>
       ),
     },
@@ -197,9 +201,11 @@ function Products() {
         <BECard
           title="Danh sách sản phẩm"
           rightAction={
-            <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
-              Thêm sản phẩm
-            </ButtonRounded>
+            role === 1 && (
+              <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+                Thêm sản phẩm
+              </ButtonRounded>
+            )
           }
         />
         <BECard>
@@ -298,6 +304,8 @@ function Products() {
   );
 }
 
-Products.propTypes = {};
+Products.propTypes = {
+  role: PropTypes.number.isRequired,
+};
 
 export default Products;

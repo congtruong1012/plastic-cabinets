@@ -1,25 +1,26 @@
 import { Divider, LinearProgress, Stack, Typography } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
+import Pagination from 'components/atoms/Pagination';
 import TextField from 'components/atoms/TextField';
 import TypoLink from 'components/atoms/Typography/TypoLink';
-import Pagination from 'components/atoms/Pagination';
 import BECard from 'components/molecules/BECard';
+import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
 import DialogCreUpdCategory from 'components/organisms/Categories/DialogCreUpdCategory';
 import DialogDeleteCategory from 'components/organisms/Categories/DialogDeleteCategory';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchGetListCategory, fetchCreUpdCategory, fetchDeleteCategory } from './reducer';
-import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
-import { useState } from 'react';
 import useDebounce from 'hooks/useDebounce';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import HelmetHOC from '../../HOCs/HelmetHOC';
-// import PropTypes from 'prop-types';
+import { fetchCreUpdCategory, fetchDeleteCategory, fetchGetListCategory } from './reducer';
 
 const LIMIT = 10;
 
-function Categories() {
+function Categories(props) {
+  const { role } = props;
+
   const [id, setId] = useState();
   const [category, setCategory] = useState();
 
@@ -71,14 +72,16 @@ function Categories() {
           <Typography variant="body2" component="span" fontWeight={600}>
             {value?.name}
           </Typography>
-          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={1}>
-            <TypoLink color="primary" variant="body2" fontWeight={600} onClick={() => handleOpen(value)}>
-              Sửa
-            </TypoLink>
-            <TypoLink color="error" variant="body2" fontWeight={600} onClick={() => handleOpenDel(value?.id)}>
-              Xóa
-            </TypoLink>
-          </Stack>
+          {role === 1 && (
+            <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={1}>
+              <TypoLink color="primary" variant="body2" fontWeight={600} onClick={() => handleOpen(value)}>
+                Sửa
+              </TypoLink>
+              <TypoLink color="error" variant="body2" fontWeight={600} onClick={() => handleOpenDel(value?.id)}>
+                Xóa
+              </TypoLink>
+            </Stack>
+          )}
         </>
       ),
     },
@@ -95,9 +98,11 @@ function Categories() {
         <BECard
           title="Danh sách danh mục"
           rightAction={
-            <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
-              Thêm danh mục
-            </ButtonRounded>
+            role === 1 && (
+              <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+                Thêm danh mục
+              </ButtonRounded>
+            )
           }
         />
         <BECard>
@@ -144,6 +149,8 @@ function Categories() {
   );
 }
 
-Categories.propTypes = {};
+Categories.propTypes = {
+  role: PropTypes.number,
+};
 
 export default Categories;

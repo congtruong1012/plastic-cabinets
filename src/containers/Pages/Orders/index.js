@@ -1,26 +1,28 @@
-import { Stack, Typography, useTheme, LinearProgress, CircularProgress } from '@mui/material';
-import BECard from 'components/molecules/BECard';
-import React, { useEffect, useState } from 'react';
+import { CircularProgress, LinearProgress, Stack, Typography, useTheme } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
-import LinkTo from 'components/molecules/LinkTo';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
+import BECard from 'components/molecules/BECard';
+import LinkTo from 'components/molecules/LinkTo';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
+import React, { useEffect, useState } from 'react';
 
-import useFlag from 'hooks/useFlag';
-import DialogOrderDetail from 'components/organisms/Orders/DialogOrderDetail';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCancelOrder, fetchConfirmOrder, fetchDeliverOrder, fetchGetListOrder } from './reducer';
+import { unwrapResult } from '@reduxjs/toolkit';
 import formatCurrency from 'assets/js/helper/formatCurrency';
 import Pagination from 'components/atoms/Pagination';
 import LoadingCircular from 'components/molecules/Loading/LoadingCircular';
+import DialogOrderDetail from 'components/organisms/Orders/DialogOrderDetail';
 import Filter from 'components/organisms/Orders/Filter';
-import { unwrapResult } from '@reduxjs/toolkit';
+import useFlag from 'hooks/useFlag';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import HelmetHOC from '../../HOCs/HelmetHOC';
-// import PropTypes from 'prop-types';
+import { fetchCancelOrder, fetchConfirmOrder, fetchDeliverOrder, fetchGetListOrder } from './reducer';
 
 const LIMIT = 10;
 
-function Orders() {
+function Orders(props) {
+  const { role } = props;
+
   const theme = useTheme();
 
   const [open, handleOpen, handleClose] = useFlag();
@@ -113,37 +115,41 @@ function Orders() {
       format: (value) => (
         <>
           <Stack spacing={1} direction="row">
-            {value?.status === 1 && (
+            {role === 1 && (
               <>
-                <ButtonRounded
-                  disabled={isLoadingConfirm}
-                  startIcon={isLoadingConfirm && <CircularProgress size={20} />}
-                  onClick={() => handleActionOrder(value?.code, 2)}
-                  variant="contained"
-                >
-                  Xác nhận
-                </ButtonRounded>
-                <ButtonRounded
-                  disabled={isLoadingCancel}
-                  startIcon={isLoadingCancel && <CircularProgress size={20} />}
-                  onClick={() => handleActionOrder(value?.code, 4)}
-                  variant="contained"
-                  color="error"
-                >
-                  Hủy đơn
-                </ButtonRounded>
+                {value?.status === 1 && (
+                  <>
+                    <ButtonRounded
+                      disabled={isLoadingConfirm}
+                      startIcon={isLoadingConfirm && <CircularProgress size={20} />}
+                      onClick={() => handleActionOrder(value?.code, 2)}
+                      variant="contained"
+                    >
+                      Xác nhận
+                    </ButtonRounded>
+                    <ButtonRounded
+                      disabled={isLoadingCancel}
+                      startIcon={isLoadingCancel && <CircularProgress size={20} />}
+                      onClick={() => handleActionOrder(value?.code, 4)}
+                      variant="contained"
+                      color="error"
+                    >
+                      Hủy đơn
+                    </ButtonRounded>
+                  </>
+                )}
+                {value?.status === 2 && (
+                  <ButtonRounded
+                    disabled={isLoadingDeliver}
+                    startIcon={isLoadingDeliver && <CircularProgress size={20} />}
+                    onClick={() => handleActionOrder(value?.code, 3)}
+                    variant="contained"
+                    color="warning"
+                  >
+                    Giao hàng
+                  </ButtonRounded>
+                )}
               </>
-            )}
-            {value?.status === 2 && (
-              <ButtonRounded
-                disabled={isLoadingDeliver}
-                startIcon={isLoadingDeliver && <CircularProgress size={20} />}
-                onClick={() => handleActionOrder(value?.code, 3)}
-                variant="contained"
-                color="warning"
-              >
-                Giao hàng
-              </ButtonRounded>
             )}
             <ButtonRounded onClick={() => onOpen(value)}>Xem chi tiết</ButtonRounded>
           </Stack>
@@ -196,6 +202,7 @@ function Orders() {
             order={order}
             flagsAction={flagsAction}
             handleActionOrder={handleActionOrder}
+            role={role}
           />
         )}
       </Stack>
@@ -203,6 +210,8 @@ function Orders() {
   );
 }
 
-Orders.propTypes = {};
+Orders.propTypes = {
+  role: PropTypes.number,
+};
 
 export default Orders;

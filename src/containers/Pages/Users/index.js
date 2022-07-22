@@ -1,20 +1,21 @@
 import { Avatar, CardHeader, Grid, LinearProgress, Stack } from '@mui/material';
 import createRows from 'assets/js/helper/createRows';
+import ButtonRounded from 'components/atoms/Button/ButtonRounded';
 import Pagination from 'components/atoms/Pagination';
 import TextField from 'components/atoms/TextField';
 import TypoLink from 'components/atoms/Typography/TypoLink';
 import BECard from 'components/molecules/BECard';
 import ResponsiveTable from 'components/molecules/ResponsiveTable';
+import DialogCreateUser from 'components/organisms/Users/DialogCreateUser';
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ButtonRounded from '../../../components/atoms/Button/ButtonRounded';
-import DialogCreateUser from '../../../components/organisms/Users/DialogCreateUser';
 import { fetchCreateUser, fetchGetListUser } from './reducer';
-// import PropTypes from 'prop-types'
 
 const LIMIT = 10;
 
-function Users() {
+function Users(props) {
+  const { role } = props;
   const [open, setOpen] = useState(false);
   // Selector
   const { isLoading, isLoadingCreate, list, params, total } = useSelector((state) => state.users);
@@ -41,6 +42,7 @@ function Users() {
           avatar={<Avatar src={value?.avatar} />}
           title={value?.fullName}
           subheader={
+            role === 1 &&
             value?.role !== 1 && (
               <TypoLink variant="body2" color={value?.role === 0 ? 'error' : 'primary'}>
                 {value?.role === 0 ? 'Xóa thành viên' : 'Thêm thành viên'}
@@ -85,9 +87,11 @@ function Users() {
         <BECard
           title="Danh sách tài khoản"
           rightAction={
-            <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
-              Thêm tài khoản
-            </ButtonRounded>
+            role === 1 && (
+              <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+                Thêm tài khoản
+              </ButtonRounded>
+            )
           }
         />
         <BECard>
@@ -121,6 +125,8 @@ function Users() {
   );
 }
 
-Users.propTypes = {};
+Users.propTypes = {
+  role: PropTypes.number,
+};
 
 export default Users;
