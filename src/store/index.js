@@ -17,4 +17,5 @@ export const store = configureStore({
     orders,
     users,
   },
+  devTools: process.env.NODE_ENV === 'development',
 });
