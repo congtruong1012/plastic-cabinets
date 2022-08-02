@@ -46,6 +46,7 @@ axiosClient.interceptors.response.use(
     const message = response.data.message;
     const originalRequest = response.config;
     if (status && status !== 200) {
+      console.log('status', status, message);
       if (status === 401) {
         if (message === 'TokenExpiredError') {
           // originalRequest._retry = true;
