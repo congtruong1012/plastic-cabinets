@@ -26,6 +26,7 @@ function App() {
           const res = await dispatch(fetchCheckLogged());
           unwrapResult(res);
         } catch (error) {
+          console.log('error', error);
           navigator('/login');
         }
       })();
