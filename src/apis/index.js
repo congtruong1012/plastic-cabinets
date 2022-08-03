@@ -40,13 +40,13 @@ axiosClient.interceptors.request.use(
 // Add a response interceptor
 axiosClient.interceptors.response.use(
   async function (response) {
+    console.log('response', response);
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     const status = response.data.status;
     const message = response.data.message;
     const originalRequest = response.config;
     if (status && status !== 200) {
-      console.log('status', status, message);
       if (status === 401) {
         if (message === 'TokenExpiredError') {
           // originalRequest._retry = true;
