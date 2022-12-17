@@ -1,6 +1,6 @@
 import axiosClient from 'apis';
 
-const url = (path) => `/sys/product/${path}`;
+const url = (path) => `/api/sys/product/${path}`;
 
 async function getListProduct(params) {
   const res = axiosClient.get(url('list'), { params });

@@ -1,6 +1,6 @@
 import axiosClient from 'apis';
 
-const url = (path) => `/user/${path}`;
+const url = (path) => `/api/user/${path}`;
 
 async function getListUser(params) {
   const res = axiosClient.get(url('list'), { params });

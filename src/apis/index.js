@@ -40,6 +40,7 @@ axiosClient.interceptors.request.use(
 // Add a response interceptor
 axiosClient.interceptors.response.use(
   async function (response) {
+    console.log('response', response);
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     const status = response.data.status;
@@ -80,9 +81,10 @@ axiosClient.interceptors.response.use(
                 isRefreshing = false;
               });
           });
-        } else {
-          window.location.href = '/login';
-        }
+        } 
+        // else {
+        //   window.location.href = '/login';
+        // }
       }
       return Promise.reject(response.data);
     }

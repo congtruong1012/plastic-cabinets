@@ -1,6 +1,6 @@
 import axiosClient from 'apis';
 
-const url = (path) => `/sys/order/${path}`;
+const url = (path) => `/api/sys/order/${path}`;
 
 async function getTurnover(params) {
   const res = axiosClient.get(url('turnover'), { params });

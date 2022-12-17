@@ -1,6 +1,6 @@
 import axiosClient from 'apis';
 
-const url = (path) => `/sys/category/${path}`;
+const url = (path) => `/api/sys/category/${path}`;
 
 async function getListCategory(params) {
   const res = axiosClient.get(url('list'), { params });
