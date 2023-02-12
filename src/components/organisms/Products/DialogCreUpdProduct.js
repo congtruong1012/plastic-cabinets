@@ -58,7 +58,7 @@ function DialogCreUpdProduct(props) {
         price: yupCus.string().required().label('Giá'),
         discount: yupCus.string().required().min(0).max(100).label('Khuyến mãi'),
         description: yupCus.string().required().label('Mô tả'),
-        images: yupCus.array().required().min(1, 'Phải có ít nhất 1 ảnh').label('Ảnh'),
+        images: yupCus.array().label('Ảnh'),
         typeProd: yupCus.number().required().label('Loại sản phẩm'),
       }),
     ),
