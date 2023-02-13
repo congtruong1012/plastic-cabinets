@@ -1,5 +1,5 @@
 import { Box, FormControlLabel, FormHelperText, Grid, LinearProgress, Radio, RadioGroup } from '@mui/material';
-import onUpload from 'components/../assets/js/helper/onUpload';
+import onUpload from 'assets/js/helper/onUpload';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
 import Dialog from 'components/atoms/Dialog';
 import Image from 'components/atoms/Image';

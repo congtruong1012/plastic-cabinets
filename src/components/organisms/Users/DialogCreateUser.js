@@ -1,15 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Dialog from '../../atoms/Dialog';
-import TextField from 'components/atoms/TextField';
-import { FormHelperText, Stack, Typography } from '@mui/material';
-import ButtonRounded from '../../atoms/Button/ButtonRounded';
-import Image from '../../atoms/Image';
-import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FormHelperText, LinearProgress, Stack, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
+import onUpload from 'assets/js/helper/onUpload';
 import yupCus from 'assets/js/yup';
+import TextField from 'components/atoms/TextField';
 import md5 from 'md5';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import ButtonRounded from '../../atoms/Button/ButtonRounded';
+import Dialog from '../../atoms/Dialog';
+import Image from '../../atoms/Image';
 
 function DialogCreateUser(props) {
   const { open, onClose, limit, isLoadingCreate, triggerGetListUser, triggerCreateUser } = props;
@@ -17,7 +18,8 @@ function DialogCreateUser(props) {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitted },
+    setValue,
   } = useForm({
     defaultValues: {
       name: '',
@@ -44,6 +46,23 @@ function DialogCreateUser(props) {
       }),
     ),
   });
+
+  const [progress, setProgress] = useState(0);
+
+  const handleUpload = () => {
+    onUpload({
+      options: { multiple: true },
+      onProgress: (percent) => setProgress(percent),
+      onSuccess: (res) => {
+        setValue('avatar', res?.[0]?.url, { shouldValidate: isSubmitted });
+        setProgress(0);
+      },
+      onError: (error) => {
+        console.log(error);
+        setProgress(0);
+      },
+    });
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -109,7 +128,7 @@ function DialogCreateUser(props) {
               />
             )}
           />
-          <div>
+          <Stack spacing={1}>
             <div>
               <Typography display="inline-block" sx={{ mr: 2 }}>
                 Ảnh đại diện:{' '}
@@ -117,11 +136,8 @@ function DialogCreateUser(props) {
               <Controller
                 name="avatar"
                 control={control}
-                render={({ field }) => (
-                  <ButtonRounded
-                    onClick={() => field.onChange('https://nguoinoitieng.tv/images/nnt/102/0/bgnb.jpg')}
-                    variant="contained"
-                  >
+                render={() => (
+                  <ButtonRounded onClick={handleUpload} variant="contained">
                     Tải ảnh
                   </ButtonRounded>
                 )}
@@ -131,13 +147,26 @@ function DialogCreateUser(props) {
               name="avatar"
               control={control}
               render={({ field }) => (
-                <>
-                  <Image ratio="11" image={field.value} isDelete sx={{ my: 1 }} />
+                <Stack spacing={1}>
+                  {progress > 0 && <LinearProgress variant="determinate" value={progress} sx={{ width: 1 }} />}
+                  {field.value && (
+                    <Image
+                      ratio="11"
+                      image={field.value}
+                      isDelete
+                      sx={{ my: 1 }}
+                      onDelete={() =>
+                        setValue('avatar', '', {
+                          shouldValidate: isSubmitted,
+                        })
+                      }
+                    />
+                  )}
                   <FormHelperText error>{errors?.avatar?.message}</FormHelperText>
-                </>
+                </Stack>
               )}
             />
-          </div>
+          </Stack>
         </Stack>
       }
       onSubmit={handleSubmit(onSubmit, (err) => console.log(err))}

@@ -1,4 +1,5 @@
 import { Avatar, CardHeader, Grid, LinearProgress, Stack } from '@mui/material';
+import { unwrapResult } from '@reduxjs/toolkit';
 import createRows from 'assets/js/helper/createRows';
 import ButtonRounded from 'components/atoms/Button/ButtonRounded';
 import Pagination from 'components/atoms/Pagination';
@@ -10,23 +11,35 @@ import DialogCreateUser from 'components/organisms/Users/DialogCreateUser';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCreateUser, fetchGetListUser } from './reducer';
+import DialogConfirm from '../../../components/molecules/DialogConfirm';
+import { fetchCreateUser, fetchGetListUser, fetchRemoveRoleMember, fetchSetRoleMember } from './reducer';
 
 const LIMIT = 10;
 
 function Users(props) {
   const { role } = props;
-  const [open, setOpen] = useState(false);
+
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [user, setUser] = useState({});
   // Selector
-  const { isLoading, isLoadingCreate, list, params, total } = useSelector((state) => state.users);
+  const { isLoading, isLoadingCreate, isLoadingSet, list, params, total } = useSelector((state) => state.users);
 
   // Dispatch
   const dispatch = useDispatch();
   const triggerGetListUser = (params) => dispatch(fetchGetListUser(params));
   const triggerCreatetUser = (params) => dispatch(fetchCreateUser(params));
+  const triggerSetRole = (params) => dispatch(fetchSetRoleMember(params));
+  const triggerRemoveRole = (params) => dispatch(fetchRemoveRoleMember(params));
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenCreate = () => setOpenCreate(true);
+  const handleCloseCreate = () => setOpenCreate(false);
+
+  const handleOpenConfirm = (data) => {
+    setOpenConfirm(true);
+    setUser(data);
+  };
+  const handleCloseConfirm = () => setOpenConfirm(false);
 
   const handleLoadMore = (e, newPage) => {
     triggerGetListUser({ params: { ...params, page: newPage }, isFirst: false });
@@ -44,7 +57,11 @@ function Users(props) {
           subheader={
             role === 1 &&
             value?.role !== 1 && (
-              <TypoLink variant="body2" color={value?.role === 0 ? 'error' : 'primary'}>
+              <TypoLink
+                onClick={() => handleOpenConfirm(value)}
+                variant="body2"
+                color={value?.role === 0 ? 'error' : 'primary'}
+              >
                 {value?.role === 0 ? 'Xóa thành viên' : 'Thêm thành viên'}
               </TypoLink>
             )
@@ -72,6 +89,21 @@ function Users(props) {
     },
   ];
 
+  const onSubmit = async () => {
+    try {
+      const func = user?.role === 0 ? triggerRemoveRole : triggerSetRole;
+
+      const res = await func({
+        id: user?.id,
+      });
+      unwrapResult(res);
+      setUser({});
+      handleCloseConfirm();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     if (!isLoading) {
       triggerGetListUser({
@@ -88,7 +120,7 @@ function Users(props) {
           title="Danh sách tài khoản"
           rightAction={
             role === 1 && (
-              <ButtonRounded variant="contained" color="primary" onClick={handleOpen}>
+              <ButtonRounded variant="contained" color="primary" onClick={handleOpenCreate}>
                 Thêm tài khoản
               </ButtonRounded>
             )
@@ -113,14 +145,21 @@ function Users(props) {
       </Stack>
       {open && (
         <DialogCreateUser
-          open={open}
-          onClose={handleClose}
+          open={openCreate}
+          onClose={handleCloseCreate}
           limit={LIMIT}
           isLoadingCreate={isLoadingCreate}
           triggerCreateUser={triggerCreatetUser}
           triggerGetListUser={triggerGetListUser}
         />
       )}
+      <DialogConfirm
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        title={user?.role === 0 ? 'Xoá thành viên' : 'Thêm thành viên'}
+        isLoading={isLoadingSet}
+        onSubmit={onSubmit}
+      />
     </>
   );
 }

@@ -12,4 +12,14 @@ async function createUser(params) {
   return res;
 }
 
-export { getListUser, createUser };
+async function setRoleMember(params) {
+  const res = axiosClient.post(url('set-role'), params);
+  return res;
+}
+
+async function removeRoleMember(params) {
+  const res = axiosClient.post(url('remove-role'), params);
+  return res;
+}
+
+export { getListUser, createUser, setRoleMember, removeRoleMember };

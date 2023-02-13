@@ -1,5 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getListUser, createUser } from 'apis/user';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createUser, getListUser } from 'apis/user';
+import { removeRoleMember, setRoleMember } from '../../../apis/user';
 
 const namespace = 'user';
 
@@ -13,12 +14,23 @@ export const fetchCreateUser = createAsyncThunk(`${namespace}/fetchCreateUser`, 
   return res;
 });
 
+export const fetchSetRoleMember = createAsyncThunk(`${namespace}/fetchSetRoleMember`, async (params) => {
+  const res = await setRoleMember(params);
+  return res;
+});
+
+export const fetchRemoveRoleMember = createAsyncThunk(`${namespace}/fetchRemoveRoleMember`, async (params) => {
+  const res = await removeRoleMember(params);
+  return res;
+});
+
 const userSlice = createSlice({
   name: namespace,
 
   initialState: {
     isLoading: false,
     isLoadingCreate: false,
+    isLoadingSet: false,
     params: {},
     list: [],
     total: 0,
@@ -50,6 +62,36 @@ const userSlice = createSlice({
     },
     [fetchCreateUser.rejected]: (state, { error }) => {
       state.isLoadingCreate = false;
+      state.error = error;
+    },
+
+    [fetchSetRoleMember.pending]: (state) => {
+      state.isLoadingSet = true;
+    },
+    [fetchSetRoleMember.fulfilled]: (state, { payload }) => {
+      state.isLoadingSet = false;
+      const index = state.list.findIndex((item) => item.id === payload?.id);
+      if (index > -1) {
+        state.list[index].role = payload?.role;
+      }
+    },
+    [fetchSetRoleMember.rejected]: (state, { error }) => {
+      state.isLoadingSet = false;
+      state.error = error;
+    },
+
+    [fetchRemoveRoleMember.pending]: (state) => {
+      state.isLoadingSet = true;
+    },
+    [fetchRemoveRoleMember.fulfilled]: (state, { payload }) => {
+      state.isLoadingSet = false;
+      const index = state.list.findIndex((item) => item.id === payload?.id);
+      if (index > -1) {
+        state.list[index].role = payload?.role;
+      }
+    },
+    [fetchRemoveRoleMember.rejected]: (state, { error }) => {
+      state.isLoadingSet = false;
       state.error = error;
     },
   },
