@@ -11,6 +11,7 @@ import DialogCreateUser from 'components/organisms/Users/DialogCreateUser';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { debounce } from '../../../assets/js/helper/debounce';
 import DialogConfirm from '../../../components/molecules/DialogConfirm';
 import { fetchCreateUser, fetchGetListUser, fetchRemoveRoleMember, fetchSetRoleMember } from './reducer';
 
@@ -104,6 +105,13 @@ function Users(props) {
     }
   };
 
+  const handleSearch = debounce((e) => {
+    triggerGetListUser({
+      params: { limit: LIMIT, page: 1, username: e.target.value },
+      isFirst: true,
+    });
+  }, 500);
+
   useEffect(() => {
     if (!isLoading) {
       triggerGetListUser({
@@ -130,7 +138,7 @@ function Users(props) {
           <Stack spacing={2}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={3}>
-                <TextField />
+                <TextField onChange={handleSearch} placeholder="Tìm kiếm tên đăng nhập"/>
               </Grid>
             </Grid>
           </Stack>
