@@ -13,7 +13,7 @@ export default function onUpload({ options, onProgress, onSuccess, onError }) {
       for (const file of files) {
         formData.append('myFiles', file);
       }
-      const images = await axiosClient.post('http://localhost:4000/upload', formData, {
+      const images = await axiosClient.post(`${process.env.REACT_APP_SERVER_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
